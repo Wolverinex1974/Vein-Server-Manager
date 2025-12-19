@@ -1,11 +1,14 @@
+# --- VERSION & IDENTITY ---
+MANAGER_VERSION = "v4.4.5 (Stable Release)"
+AUTHOR_NAME = "Wolverinex77"
+
 # constants.py
 import os
 import sys
+from datetime import datetime
 
-# --- VERSION & IDENTITY ---
-MANAGER_VERSION = "v3.9.0 (Modular Refactor)"
-AUTHOR_NAME = "Wolverinex77"
 APP_TITLE = f"Vein Manager {MANAGER_VERSION}"
+DEBUG_MODE = True  # <--- MASTER SWITCH
 
 # --- FILE PATHS ---
 if getattr(sys, 'frozen', False):
@@ -16,8 +19,17 @@ else:
 SERVER_EXECUTABLE = 'VeinServer-Win64-Test.exe'
 MANAGER_CONFIG_FILE = os.path.join(APPLICATION_PATH, 'manager_config.ini')
 HISTORY_FILE = os.path.join(APPLICATION_PATH, 'player_history.json')
-LOGS_DIR = os.path.join(APPLICATION_PATH, 'Manager_Logs')
-EVENTS_LOG_FILE = os.path.join(LOGS_DIR, 'Manager_Events.log')
+
+# Log Organization
+LOGS_ROOT_DIR = os.path.join(APPLICATION_PATH, 'Manager_Logs')
+CRASH_LOGS_DIR = os.path.join(LOGS_ROOT_DIR, 'Crashes')
+HISTORY_LOGS_DIR = os.path.join(LOGS_ROOT_DIR, 'History')
+DAILY_LOG_FILE = os.path.join(HISTORY_LOGS_DIR, f"Events_{datetime.now().strftime('%Y-%m-%d')}.log")
+DEBUG_LOG_FILE = os.path.join(APPLICATION_PATH, "debug_crash.log")
+
+# Profiles
+PROFILES_DIR = os.path.join(APPLICATION_PATH, 'User_Profiles')
+
 ICON_FILE = os.path.join(APPLICATION_PATH, 'favicon.ico')
 
 # --- EXTERNAL ---
@@ -30,10 +42,15 @@ LINK_DISCORD_MAIN = "https://discord.gg/qPhWD6AxhV"
 LINK_DISCORD_MODS = "https://discord.gg/5McDc8javs"
 LINK_NEXUS_MODS = "https://www.nexusmods.com/vein/mods/101"
 LINK_GITHUB = "https://github.com/Wolverinex1974/Vein-Server-Manager"
+LINK_GITHUB_RELEASES = "https://github.com/Wolverinex1974/Vein-Server-Manager/releases"
 LINK_KOFI = "https://ko-fi.com/wolverine74"
 
+# --- SENTINEL LOGIC (Safety) ---
+REGEX_SAVE_START = "LogVeinSaveGame: Saving all objects"
+REGEX_SAVE_FINISH_A = "LogVeinSaveGame: Saved to slot Server"
+REGEX_SAVE_FINISH_B = "LogVeinSaveGame: Saved autosave game to disk"
+
 # --- THE TRUTH TABLE (Gameplay Defaults) ---
-# Format: (Label, Key, Tooltip, Type, IniFile, Section, DefaultValue)
 GAMEPLAY_DEFINITIONS = {
     "General & Loot": [
         ("Loot Scarcity", "vein.Scarcity.Difficulty", "Loot Rarity. Standard=2.0. (Default: 2.0)", "combo_scarcity", "Engine", "ConsoleVariables", "2.0"),

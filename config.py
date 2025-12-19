@@ -1,3 +1,6 @@
+# --- VERSION & IDENTITY ---
+# MANAGER_VERSION = "v4.4.5 (Stable Release)"
+
 # config.py
 import configparser
 import os
@@ -62,10 +65,8 @@ def update_engine_ini_cvar(server_path, updates_dict):
     path = get_engine_ini_path(server_path)
     if not path: return
 
-    # Ensure directory exists
     os.makedirs(os.path.dirname(path), exist_ok=True)
     
-    # Read existing
     lines = []
     if os.path.exists(path):
         with open(path, 'r', encoding='utf-8') as f:
@@ -79,7 +80,6 @@ def update_engine_ini_cvar(server_path, updates_dict):
     for line in lines:
         stripped = line.strip()
         
-        # Check Section Header
         if stripped.startswith('[') and stripped.endswith(']'):
             if stripped.lower() == '[consolevariables]':
                 in_cvar_section = True
@@ -87,7 +87,6 @@ def update_engine_ini_cvar(server_path, updates_dict):
                 new_lines.append(line)
                 continue
             else:
-                # Leaving Cvar section, write remaining new keys
                 if in_cvar_section:
                     for k, v in updates_dict.items():
                         if k not in keys_written:
@@ -97,11 +96,9 @@ def update_engine_ini_cvar(server_path, updates_dict):
                 new_lines.append(line)
                 continue
 
-        # Process Line inside Cvar Section
         if in_cvar_section:
             matched_key = None
             for k in updates_dict:
-                # Case insensitive matching for keys
                 if stripped.lower().startswith(k.lower() + "="):
                     matched_key = k
                     break
@@ -114,12 +111,10 @@ def update_engine_ini_cvar(server_path, updates_dict):
         else:
             new_lines.append(line)
 
-    # If file was empty or section missing
     if not section_found:
         new_lines.append("\n[ConsoleVariables]\n")
         in_cvar_section = True
 
-    # Write any keys that weren't found in existing file
     if in_cvar_section:
         for k, v in updates_dict.items():
             if k not in keys_written:
@@ -154,7 +149,6 @@ def load_engine_ini_raw(filepath, keys_to_find):
                     key = parts[0].strip()
                     val = parts[1].strip()
                     
-                    # Case insensitive match against keys_to_find
                     for target in keys_to_find:
                         if key.lower() == target.lower():
                             found_values[target] = val
