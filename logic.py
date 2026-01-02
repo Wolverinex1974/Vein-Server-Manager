@@ -22,6 +22,7 @@ from datetime import datetime
 import constants
 import config
 import logger 
+from steam.client import SteamClient
 
 # --- DISCORD LIBRARY SAFE IMPORT ---
 try:
@@ -579,3 +580,36 @@ def check_prerequisites(server_path, steamcmd_path, log_callback):
                     if log_callback: log_callback(">> System: Auto-Fixed steamclient64.dll")
                     logger.debug("System: Auto-Fixed steamclient64.dll")
                 except: pass
+
+# --- STEAM BETA BRANCH RETRIEVAL USING STEAMCLIENT ---
+# --- REQUIRES 'steam' PYPI PACKAGE ---
+def steam_get_beta_branches():
+    # Initialize the client
+    client = SteamClient()
+
+    # Log in (you will be prompted for credentials/2FA if not cached)
+    client.anonymous_login() 
+
+    # Set APP ID to Vein
+    appid = int(constants.VEIN_APP_ID)
+
+    # Retrieve product info for the specific AppID
+    product_info = client.get_product_info(apps=[appid])
+    
+    if not product_info or 'apps' not in product_info:
+        return "Game not found or info unavailable."
+
+    # Navigate the nested dictionary to find branches
+    # Structure: product_info['apps'][appid]['depots']['branches']
+    app_data = product_info['apps'].get(appid, {})
+    branches = app_data.get('depots', {}).get('branches', {})
+    
+    if not branches:
+        return "No beta branches found for this app."
+    
+    #for branch_name, details in branches.items():
+    branches = list(branches.keys()) # or [name for name in branches]
+
+    client.disconnect()
+    
+    return branches
