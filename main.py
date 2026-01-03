@@ -713,6 +713,7 @@ class ServerManager:
     # --- IO HANDLERS ---
     def save_all_settings(self, silent=False):
         c = self.conf_parser
+        if 'AutoStart' not in c: c['AutoStart'] = {}       
         c['Manager']['ServerPath'] = self.path_entry.get()
         c['Manager']['SteamCMDPath'] = self.steamcmd_path_entry.get()
         c['Manager']['KeepAlive'] = str(self.keep_alive_var.get())
